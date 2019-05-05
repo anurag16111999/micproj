@@ -358,13 +358,17 @@ y = numpy.array(train_set)
 test_set = yt[400:]
 test_set.extend(yf)
 
+print([row[-1] for row in test_set])
+print([row[-1] for row in train_set])
+
+
 # print("train_set")
 # print(train_set)
 
 # print("test_set")
 # print(test_set)
 
-bins = 10;
+bins = 20;
 
 column1 = len(dataset[0])
 row1 = len(y)
@@ -434,8 +438,8 @@ sample_size = 0.1
 #n_features = int(sqrt(len(dataset[0]) - 1))
 n_features = int(sqrt(rsmnum))
 
-for n_trees in [50]:
-    scores = new_evaluate_algorithm(train_set,test_set, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
+for n_trees in [30]:
+    scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
     print('Trees: %d' % n_trees)
     print('Scores: %s' % scores)
     print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))

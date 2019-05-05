@@ -132,7 +132,7 @@ def get_split(dataset, n_features):
 
     for index in features:
         for row in dataset:
-            groups = test_split(index, row[index], new_dataset)
+            groups = test_split(index, row[index], dataset)
             # print(type(groups))
             gini = gini_index(groups, class_values)
             if gini < b_score:
@@ -270,7 +270,7 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
         # outlierset = []
         print("sample")
         print(len(sample))
-        sample11 = sample
+        sample11 = []
         # print(sample)
         i1 = 1;
         for x in sample:
@@ -281,10 +281,13 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
             # print(x1)
             sample11.extend(x1)
 
+        sample.extend(sample11)
+        print("x1 => " + str(len(sample)))
+        
         print("tree " + str(i))    
 # n generate the data here
 # THROUGH RSM
-        tree = build_tree(sample1, max_depth, min_size, n_features)
+        tree = build_tree(sample, max_depth, min_size, n_features)
         trees.append(tree)
     print("out rf")
 
@@ -372,7 +375,7 @@ for i in range(column1-1):
 
 def new_evaluate_algorithm(train_set,test_set, algorithm, *args):
     # folds = cross_validation_split(dataset, n_folds)
-    # scores = list()
+    scores = list()
     # for fold in folds:
         # train_set = list(folds)
         # train_set.remove(fold)
@@ -395,7 +398,7 @@ min_size = 1
 sample_size = 1.0
 n_features = int(sqrt(len(dataset[0]) - 1))
 
-for n_trees in [1, 5, 10]:
+for n_trees in [100,200]:
     scores = new_evaluate_algorithm(train_set,test_set, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
     print('Trees: %d' % n_trees)
     print('Scores: %s' % scores)

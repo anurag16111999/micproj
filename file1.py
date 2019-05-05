@@ -254,21 +254,21 @@ def giveoutliers(ratio,sample,rsmlist):
 def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_features):
     trees = list()
     # rsmnum = 10
-    print("in rf")
-    print("len train")
+    # print("in rf")
+    # print("len train")
 
-
-    rsmlist = list()
-    while len(rsmlist) < rsmnum:
-        index = randrange(len(train[0]) - 1)
-        if index not in rsmlist:
-            rsmlist.append(index)
-    print("in rf1")
+    # print("in rf1")
 
     for i in range(n_trees):
         sample = subsample(train, sample_size)
+        rsmlist = list()
+        while len(rsmlist) < rsmnum:
+            index = randrange(len(train[0]) - 1)
+            if index not in rsmlist:
+                rsmlist.append(index)
+
         # outlierset = []
-        print("sample")
+        # print("sample")
         print(len(sample))
         sample11 = []
         # print(sample)
@@ -277,19 +277,19 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
             # print(x)            
             i1 = i1 + 1;
             x1 = giveoutliers(outlierratio,x,rsmlist)
-            print("x1 => " + str(len(sample)))
+            # print("x1 => " + str(len(sample)))
             # print(x1)
             sample11.extend(x1)
 
         sample.extend(sample11)
-        print("x1 => " + str(len(sample)))
+        # print("x1 => " + str(len(sample)))
         
         print("tree " + str(i))    
 # n generate the data here
 # THROUGH RSM
         tree = build_tree(sample, max_depth, min_size, n_features)
         trees.append(tree)
-    print("out rf")
+    # print("out rf")
 
     predictions = [bagging_predict(trees, row) for row in test]
     return (predictions)
@@ -393,12 +393,16 @@ def new_evaluate_algorithm(train_set,test_set, algorithm, *args):
 
 
 # n_folds = 5
-max_depth = 2 # previously 100 
+max_depth = 10 # previously 100 
 min_size = 1
 sample_size = 1.0
 n_features = int(sqrt(len(dataset[0]) - 1))
 
-for n_trees in [100,200]:
+ntre = input("num trees")
+dep = input("depth")
+max_depth = int(dep)
+
+for n_trees in [int(ntre)]:
     scores = new_evaluate_algorithm(train_set,test_set, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
     print('Trees: %d' % n_trees)
     print('Scores: %s' % scores)

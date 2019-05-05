@@ -4,6 +4,7 @@ from random import randrange
 from csv import reader
 from math import sqrt
 from sklearn.preprocessing import normalize
+import random as rd
 
 import numpy
 import time
@@ -24,9 +25,15 @@ def str_column_to_float(dataset, column):
     for row in dataset:
         row[column] = float(row[column].strip())
 
+def str_column_to_int(dataset, column):
+    for row in dataset:
+        if row[column].strip() == '?':
+            row[column] = 0
+        else:
+            row[column] = int(row[column].strip())
 
 # Convert string column to integer
-def str_column_to_int(dataset, column):
+def str_column_to_cls(dataset, column):
     class_values = [row[column] for row in dataset]
     unique = set(class_values)
     lookup = dict()
@@ -315,14 +322,17 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
 seed(2)
 
 # load and prepare data
-filename = 'sonar.all-data.csv'
+filename = 'breast-cancer-wisconsin.data'
 dataset = load_csv(filename)
+for i,rw in enumerate(dataset):
+    rw = rw[1:]
+    dataset[i] = rw
 # convert string attributes to integers
 for i in range(0, len(dataset[0]) - 1):
-    str_column_to_float(dataset, i)
+    str_column_to_int(dataset, i)
 
 # convert class column to integers
-str_column_to_int(dataset, len(dataset[0]) - 1)
+str_column_to_cls(dataset, len(dataset[0]) - 1)
 
 # evaluate algorithm
 
@@ -331,17 +341,22 @@ str_column_to_int(dataset, len(dataset[0]) - 1)
 
 
 y22=numpy.array([numpy.array(xi) for xi in dataset])
-y11 = []
+yt = []
+yf = []
+
 
 # print(y)
 for z11 in y22:
     if(z11[-1] == 0):
-        y11.append(list(z11))
+        yt.append(list(z11))
+    else:
+        yf.append(list(z11))
 
-
-y = numpy.array(y11)
-train_set = list(y11)
-test_set = list(dataset)
+rd.shuffle(yt)
+train_set = yt[0:400]
+y = numpy.array(train_set)
+test_set = yt[400:]
+test_set.extend(yf)
 
 # print("train_set")
 # print(train_set)
@@ -349,13 +364,13 @@ test_set = list(dataset)
 # print("test_set")
 # print(test_set)
 
-bins = 5;
+bins = 10;
 
 column1 = len(dataset[0])
 row1 = len(y)
 hist1 = []
-rsmnum = 15;
-outlierratio = 1;
+rsmnum = 5;
+outlierratio = 10;
 
 # train and testset have to be list of lists
 
@@ -413,13 +428,13 @@ def new_evaluate_algorithm(train_set,test_set, algorithm, *args):
 
 
 # n_folds = 5
-max_depth = 4 # previously 100 
+max_depth = 3 # previously 100 
 min_size = 1
-sample_size = 0.2
+sample_size = 0.1
 #n_features = int(sqrt(len(dataset[0]) - 1))
 n_features = int(sqrt(rsmnum))
 
-for n_trees in [30]:
+for n_trees in [50]:
     scores = new_evaluate_algorithm(train_set,test_set, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
     print('Trees: %d' % n_trees)
     print('Scores: %s' % scores)

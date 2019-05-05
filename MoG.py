@@ -106,7 +106,7 @@ def test_split(index, value, dataset):
     return left, right
 
 
-
+seed(2)
 filename = 'breast-cancer-wisconsin.data'
 dataset = load_csv(filename)
 for i,rw in enumerate(dataset):
@@ -187,12 +187,19 @@ for i in range(0, 7):
 
 predict = []
 actual = [row[-1] for row in dataset]
+thresh = 1
+for tdat in data:
+    prob = 0
+    for k1 in range(k):
+        var = multivariate_normal(mean=means[k1], cov=covar[k1])
+        prob = prob + ws[k1]*var.pdf(tdat)
+    thresh = min(thresh, prob)
 for dat in dataset:
     prob = 0
     for k1 in range(k):
         var = multivariate_normal(mean=means[k1], cov=covar[k1])
         prob = prob + ws[k1]*var.pdf(dat[:-1])
-        if prob >= 0.5:
+        if prob >= 0.5*thresh:
             predict.append(0)
         else:
             predict.append(1)

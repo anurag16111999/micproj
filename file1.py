@@ -264,8 +264,9 @@ def giveoutliers(ratio,sample,rsmlist):
 def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_features):
     trees = list()
     # rsmnum = 10
-    print("in rf")
-    print("len train")
+    # print("in rf")
+    # print("len train")
+
 
     for i in range(n_trees):
         rsmlist = list()
@@ -274,8 +275,14 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
             if index not in rsmlist:
                 rsmlist.append(index)
         sample = subsample(train, sample_size)
+        rsmlist = list()
+        while len(rsmlist) < rsmnum:
+            index = randrange(len(train[0]) - 1)
+            if index not in rsmlist:
+                rsmlist.append(index)
+
         # outlierset = []
-        print("sample")
+        # print("sample")
         print(len(sample))
         sample11 = []
         # print(sample)
@@ -284,7 +291,7 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
             # print(x)
             i1 = i1 + 1;
             x1 = giveoutliers(outlierratio,x,rsmlist)
-            print("x1 => " + str(len(sample)))
+            # print("x1 => " + str(len(sample)))
             # print(x1)
             sample11.extend(x1)
 
@@ -419,7 +426,11 @@ sample_size = 0.2
 #n_features = int(sqrt(len(dataset[0]) - 1))
 n_features = int(sqrt(rsmnum))
 
-for n_trees in [30]:
+ntre = input("num trees")
+dep = input("depth")
+max_depth = int(dep)
+
+for n_trees in [int(ntre)]:
     scores = new_evaluate_algorithm(train_set,test_set, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
     print('Trees: %d' % n_trees)
     print('Scores: %s' % scores)

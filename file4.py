@@ -1,3 +1,16 @@
+from random import seed
+from random import randrange
+from csv import reader
+from math import sqrt
+from sklearn.preprocessing import normalize
+import random as rd
+import statistics
+
+import numpy
+import time
+
+from sklearn.neighbors.kde import KernelDensity
+# import numpy as np
 # Random Forest Algorithm on Sonar Dataset
 from random import seed
 from random import randrange
@@ -274,8 +287,8 @@ def giveoutliers(ratio,sample,rsmlist):
 def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_features):
     trees = list()
     # rsmnum = 10
-    # print("in rf")
-    # print(len(train[0]))
+    print("in rf")
+    print("len train")
 
     for i in range(n_trees):
         rsmlist = list()
@@ -285,8 +298,8 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
                 rsmlist.append(index)
         sample = subsample(train, sample_size)
         # outlierset = []
-        # print("sample")
-        # print(len(sample))
+        print("sample")
+        print(len(sample))
         sample11 = []
         # print(sample)
         i1 = 1;
@@ -294,13 +307,13 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
             # print(x)
             i1 = i1 + 1;
             x1 = giveoutliers(outlierratio,x,rsmlist)
-            # print("x1 => " + str(len(sample)))
+            print("x1 => " + str(len(sample)))
             # print(x1)
             sample11.extend(x1)
 
         sample.extend(sample11)
-        # print("x1 => " + str(len(sample)))
-        # print("tree " + str(i))
+        print("x1 => " + str(len(sample)))
+        print("tree " + str(i))
 # n generate the data here
 # THROUGH RSM
         tempFea = list(rsmlist)
@@ -316,7 +329,7 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
         #tree = build_tree(sample, max_depth, min_size, n_features)
         trees.append([tree,tempFea])
         #trees.append(tree)
-    # print("out rf")
+    print("out rf")
 
     predictions = [bagging_predict(trees, row) for row in test]
 
@@ -325,10 +338,10 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
     FP = 0
     TN = 0
     FN = 0
-    # print(predictions)
-    # print(actuald)
-    # print(len(predictions))
-    # print(len(actuald))
+    print(predictions)
+    print(actuald)
+    print(len(predictions))
+    print(len(actuald))
     
 
     for i in range(len(predictions)):
@@ -351,168 +364,208 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
     MCC = float((TP*TN-FP*FN))/sqrt(float(((TP + FP)*(TP + FN)*(TN + FP)*(TN + FN))))
 
 
-    return ([predictions,MCC,(FN/float(FN + TN))])
+    return ([predictions,MCC])
 
 
 # Test the random forest algorithm
-# seed(2)
+seed(2)
 
-# load and prepare data
-filename = 'breast-cancer-wisconsin.data'
-dataset = load_csv(filename)
-for i,rw in enumerate(dataset):
-    rw = rw[1:]
-    dataset[i] = rw
-# convert string attributes to integers
-for i in range(0, len(dataset[0]) - 1):
-    str_column_to_int(dataset, i)
+testave = []
+testmcc = []
 
-# convert class column to integers
-str_column_to_cls(dataset, len(dataset[0]) - 1)
+for x2234 in range(20):
+	# load and prepare data
+	filename = 'breast-cancer-wisconsin.data'
+	dataset = load_csv(filename)
+	for i,rw in enumerate(dataset):
+	    rw = rw[1:]
+	    dataset[i] = rw
+	# convert string attributes to integers
+	for i in range(0, len(dataset[0]) - 1):
+	    str_column_to_int(dataset, i)
 
-# evaluate algorithm
+	# convert class column to integers
+	str_column_to_cls(dataset, len(dataset[0]) - 1)
 
-# for x in dataset:
-#     print(x[len(x) -1 ]);
+	# evaluate algorithm
 
-y22=numpy.array([numpy.array(xi) for xi in dataset])
-print(y22)
+	# for x in dataset:
+	#     print(x[len(x) -1 ]);
 
-yt = []
-yf = []
+	y22=numpy.array([numpy.array(xi) for xi in dataset])
 
+	print(y22)
 
-# print(y)
-for z11 in y22:
-    if(z11[-1] == 0):
-        yt.append(list(z11))
-    else:
-        yf.append(list(z11))
-
-time.sleep(1)
+	yt = []
+	yf = []
+	yt1 = []
+	yf1 = []
 
 
-rd.shuffle(yt)
-# train_set = yt[0:200]
-# y = numpy.array(train_set)
-# test_set = yt[200:]
-# test_set.extend(yf)
-
-train_set = yt[0:40]
-y = numpy.array(train_set)
-test_set = yt[40:]
-test_set.extend(yf)
-print([row[-1] for row in test_set])
-print([row[-1] for row in train_set])
+	# print(y)
+	for z11 in y22:
+	    if(z11[-1] == 0):
+	        yt.append(list(z11[:-1]))
+	        yt1.append(list(z11))
+	    else:
+	        yf.append(list(z11[:-1]))
+	        yf1.append(list(z11))
+	time.sleep(1)
 
 
-# print("train_set")
-# print(train_set)
-
-# print("test_set")
-# print(test_set)
-
-bins = 20;
-
-column1 = len(dataset[0])
-row1 = len(y)
-hist1 = []
-outlierratio = 10;
-
-# train and testset have to be list of lists
-
-# train_set = y 
+	testit = numpy.array([numpy.array(xi[:-1]) for xi in dataset])
 
 
 
-for i in range(column1-1):
-    y1 = y[:,[i]]
-    # print(y1)
-    # print( str(i) + " => " + str(max(y1)))
-    # print(min(y1))
-    #k1 = numpy.histogram(y1,range = (y1.min() - ((y1.max()-y1.min())/10),y1.max() + ((y1.max()-y1.min())/10)),bins = bins)
-    k1 = numpy.histogram(y1,range = (y1.min() ,y1.max()),bins = bins)
-    r1 = k1[0];
-    # print(k1)
-    r1 = normalize(r1.reshape(1,-1), norm="l1")
-    r1 = r1[0]
-
-    for j in range(len(r1)):
-        r1[j] = 1 - r1[j]
-    r1 = normalize(r1.reshape(1,-1), norm="l1")
-
-    # print(r1)
-    hist1.append([r1,k1[1]])
-    # k1[0] = r1
+	rd.shuffle(yt)
+	train_set = yt[0:400]
+	y = numpy.array(train_set)
+	test_set = yt[400:]
+	test_set.extend(yf)
 
 
-# print(hist1)
+	# print([row[-1] for row in test_set])
+	# print([row[-1] for row in train_set])
 
 
-# for x in 
+	# print("train_set")
+	# print(train_set)
 
-def new_evaluate_algorithm(train_set,test_set, algorithm, *args):
-    # folds = cross_validation_split(dataset, n_folds)
-    scores = list()
-    # for fold in folds:
-        # train_set = list(folds)
-        # train_set.remove(fold)
-        # train_set = sum(train_set, [])
-        # test_set = list()
-        # for row in fold:
-            # row_copy = list(row)
-            # test_set.append(row_copy)
-            # row_copy[-1] = None
-    predicted = algorithm(train_set, test_set, *args)
-    # print("predicted: ")
-    # print(predicted)
+	# print("test_set")
+	# print(test_set)
 
-    # print("actual: ")
-    # print(actuald)
-    # actual = actuald
-    accuracy = accuracy_metric(actuald, predicted[0])
-    scores.append([accuracy,predicted[1:]])
-    return scores
+	bins = 20;
+
+	column1 = len(dataset[0])
+	row1 = len(y)
+	hist1 = []
+	rsmnum = 5;
+	outlierratio = 10;
+
+	# train and testset have to be list of lists
+
+	# train_set = y 
 
 
-# n_folds = 5
-max_depth = 10# previously 100 
-min_size = 1
-sample_size = 0.1
-#n_features = in(sqrt(len(dataset[0]) - 1))
-# n_features = 3
-rsmnum = 5;
-# n_features = int(sqrt(rsmnum))
-n_features = 3;
 
-dataset = test_set
-actuald = [row[-1] for row in dataset]
+	for i in range(column1-1):
+	    y1 = y[:,[i]]
+	    # print(y1)
+	    # print( str(i) + " => " + str(max(y1)))
+	    # print(min(y1))
+	    #k1 = numpy.histogram(y1,range = (y1.min() - ((y1.max()-y1.min())/10),y1.max() + ((y1.max()-y1.min())/10)),bins = bins)
+	    k1 = numpy.histogram(y1,range = (y1.min() ,y1.max()),bins = bins)
+	    r1 = k1[0];
+	    # print(k1)
+	    r1 = normalize(r1.reshape(1,-1), norm="l1")
+	    r1 = r1[0]
+
+	    for j in range(len(r1)):
+	        r1[j] = 1 - r1[j]
+	    r1 = normalize(r1.reshape(1,-1), norm="l1")
+
+	    # print(r1)
+	    hist1.append([r1,k1[1]])
+	    # k1[0] = r1
 
 
-# for n_trees in [20 , 30 , 40 , 50 , 60 , 70 , 80 , 90 , 100 ,120 ,130 ,140 , 150 ]:
-#     scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
-#     print('Trees: %d' % n_trees)
-#     print('Scores: %s' % scores)
-#     time.sleep(0.1)
-    # print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
+	# print(hist1)
 
-n_trees = 100
-# for max_depth in [3 , 6 , 12,20,40,60,80,100,140,200,250 ]:
-outlierratio = 5
-# for max_depth in [200]:
-max_depth = 12
-for k2234 in range(20):
-    scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
-    print('outlierratio %d' % max_depth)
-    print('Scores: %s' % scores)
-    # time.sleep(3)
+
+	# for x in 
+
+
+
+	# n_folds = 5
+	max_depth = 3 # previously 100 
+	min_size = 1
+	sample_size = 0.1
+	#n_features = int(sqrt(len(dataset[0]) - 1))
+	n_features = int(sqrt(rsmnum))
+	# n_features = int(sqrt(rsmnum))
+	# n_features = 5
+
+	# dataset = test_set
+	actuald = [row[-1] for row in dataset]
+
+
+	# for n_trees in [30]:
+	#     scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
+	#     print('Trees: %d' % n_trees)
+	#     print('Scores: %s' % scores)
+	    # print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
 
 
 
 
 
-# evaluate_algorithm(dataset, random_forest, n_folds, max_depth, min_size, sample_size, n_trees, n_features);
-#predicted = algorithm(train_set, test_set, *args);
+	# evaluate_algorithm(dataset, random_forest, n_folds, max_depth, min_size, sample_size, n_trees, n_features);
+	#predicted = algorithm(train_set, test_set, *args);
 
 
-# def bagging_predict(trees, row);
+	# def bagging_predict(trees, row);
+	# X = 
+
+
+	kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(train_set)
+
+	# data
+	z11 = kde.score_samples(test_set)
+
+	# testset = dataset[]
+	dataset = []
+
+	dataset = yt1[400:]
+	dataset.extend(yf1)
+
+	# print(len(dataset))
+	# print(len(test_set))
+
+	tp = 0;
+	fp = 0;
+	tn = 0
+	fn = 0
+
+	for i in range(len(dataset)):
+		print(z11[i])
+		print(dataset[i][-1])
+		if(z11[i] > 0):
+			# print("#")	
+			if(dataset[i][-1] == 0):
+				tp = tp + 1
+			else:
+				fn = fn + 1
+		else:
+			# print("-")	
+			if(dataset[i][-1] == 1):
+				tn = tn + 1
+			else:
+				fp = fp + 1		
+
+	# print(tp)
+	# print(fp)
+	# print(tn)
+	# print(fn)
+
+	TP = tp
+	FP = fp
+	TN = tn
+	FN = fn
+	MCC = 0
+	MCC = float((TP*TN-FP*FN))/sqrt(float(((TP + FP)*(TP + FN)*(TN + FP)*(TN + FN))))
+
+	# print("(tp + tn)/float(tp + fp + tn + fn)")
+	
+	print("MCC")
+	print(MCC)
+
+	scores = ((tp + tn)/float(tp + fp + tn + fn))
+	testave.append(scores)
+	testmcc.append(MCC)
+
+print("testave")
+print(statistics.mean(testave))
+print(statistics.stdev(testave))
+print("testmcc")
+print(statistics.mean(testmcc))
+print(statistics.stdev(testmcc))

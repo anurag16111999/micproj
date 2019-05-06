@@ -5,6 +5,7 @@ from csv import reader
 from math import sqrt
 from sklearn.preprocessing import normalize
 import random as rd
+import statistics
 
 import numpy
 import time
@@ -358,98 +359,6 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
 # seed(2)
 
 # load and prepare data
-filename = 'breast-cancer-wisconsin.data'
-dataset = load_csv(filename)
-for i,rw in enumerate(dataset):
-    rw = rw[1:]
-    dataset[i] = rw
-# convert string attributes to integers
-for i in range(0, len(dataset[0]) - 1):
-    str_column_to_int(dataset, i)
-
-# convert class column to integers
-str_column_to_cls(dataset, len(dataset[0]) - 1)
-
-# evaluate algorithm
-
-# for x in dataset:
-#     print(x[len(x) -1 ]);
-
-y22=numpy.array([numpy.array(xi) for xi in dataset])
-print(y22)
-
-yt = []
-yf = []
-
-
-# print(y)
-for z11 in y22:
-    if(z11[-1] == 0):
-        yt.append(list(z11))
-    else:
-        yf.append(list(z11))
-
-time.sleep(1)
-
-
-rd.shuffle(yt)
-# train_set = yt[0:200]
-# y = numpy.array(train_set)
-# test_set = yt[200:]
-# test_set.extend(yf)
-
-train_set = yt[0:40]
-y = numpy.array(train_set)
-test_set = yt[40:]
-test_set.extend(yf)
-print([row[-1] for row in test_set])
-print([row[-1] for row in train_set])
-
-
-# print("train_set")
-# print(train_set)
-
-# print("test_set")
-# print(test_set)
-
-bins = 20;
-
-column1 = len(dataset[0])
-row1 = len(y)
-hist1 = []
-outlierratio = 10;
-
-# train and testset have to be list of lists
-
-# train_set = y 
-
-
-
-for i in range(column1-1):
-    y1 = y[:,[i]]
-    # print(y1)
-    # print( str(i) + " => " + str(max(y1)))
-    # print(min(y1))
-    #k1 = numpy.histogram(y1,range = (y1.min() - ((y1.max()-y1.min())/10),y1.max() + ((y1.max()-y1.min())/10)),bins = bins)
-    k1 = numpy.histogram(y1,range = (y1.min() ,y1.max()),bins = bins)
-    r1 = k1[0];
-    # print(k1)
-    r1 = normalize(r1.reshape(1,-1), norm="l1")
-    r1 = r1[0]
-
-    for j in range(len(r1)):
-        r1[j] = 1 - r1[j]
-    r1 = normalize(r1.reshape(1,-1), norm="l1")
-
-    # print(r1)
-    hist1.append([r1,k1[1]])
-    # k1[0] = r1
-
-
-# print(hist1)
-
-
-# for x in 
 
 def new_evaluate_algorithm(train_set,test_set, algorithm, *args):
     # folds = cross_validation_split(dataset, n_folds)
@@ -475,40 +384,172 @@ def new_evaluate_algorithm(train_set,test_set, algorithm, *args):
     return scores
 
 
-# n_folds = 5
-max_depth = 10# previously 100 
-min_size = 1
-sample_size = 0.1
-#n_features = in(sqrt(len(dataset[0]) - 1))
-# n_features = 3
-rsmnum = 5;
-# n_features = int(sqrt(rsmnum))
-n_features = 3;
+validave = 0
+testave = []
+testmcc = []
+for x2234 in range(30):
+    filename = 'breast-cancer-wisconsin.data'
+    dataset = load_csv(filename)
+    for i,rw in enumerate(dataset):
+        rw = rw[1:]
+        dataset[i] = rw
+    # convert string attributes to integers
+    for i in range(0, len(dataset[0]) - 1):
+        str_column_to_int(dataset, i)
 
-dataset = test_set
-actuald = [row[-1] for row in dataset]
+    # convert class column to integers
+    str_column_to_cls(dataset, len(dataset[0]) - 1)
+
+    # evaluate algorithm
+
+    # for x in dataset:
+    #     print(x[len(x) -1 ]);
+
+    y22=numpy.array([numpy.array(xi) for xi in dataset])
+    print(y22)
+
+    yt = []
+    yf = []
 
 
-# for n_trees in [20 , 30 , 40 , 50 , 60 , 70 , 80 , 90 , 100 ,120 ,130 ,140 , 150 ]:
-#     scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
-#     print('Trees: %d' % n_trees)
-#     print('Scores: %s' % scores)
-#     time.sleep(0.1)
-    # print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
+    # print(y)
+    for z11 in y22:
+        if(z11[-1] == 0):
+            yt.append(list(z11))
+        else:
+            yf.append(list(z11))
 
-n_trees = 100
-# for max_depth in [3 , 6 , 12,20,40,60,80,100,140,200,250 ]:
-outlierratio = 5
-# for max_depth in [200]:
-max_depth = 12
-for k2234 in range(20):
+    time.sleep(1)
+
+
+    rd.shuffle(yt)
+    # train_set = yt[0:200]
+    # y = numpy.array(train_set)
+    # test_set = yt[200:]
+    # test_set.extend(yf)
+    # validationset
+    train_set = yt[0:40]
+    y = numpy.array(train_set)
+    validationset = yt[40:240]
+    validationset.extend(yf[:100])
+
+    test_set = yt[240:]
+    test_set.extend(yf[100:])
+
+
+
+    print([row[-1] for row in test_set])
+    print([row[-1] for row in train_set])
+
+
+    # print("train_set")
+    # print(train_set)
+
+    # print("test_set")
+    # print(test_set)
+
+    bins = 20;
+
+    column1 = len(dataset[0])
+    row1 = len(y)
+    hist1 = []
+    outlierratio = 10;
+
+    # train and testset have to be list of lists
+
+    # train_set = y 
+
+
+
+    for i in range(column1-1):
+        y1 = y[:,[i]]
+        # print(y1)
+        # print( str(i) + " => " + str(max(y1)))
+        # print(min(y1))
+        #k1 = numpy.histogram(y1,range = (y1.min() - ((y1.max()-y1.min())/10),y1.max() + ((y1.max()-y1.min())/10)),bins = bins)
+        k1 = numpy.histogram(y1,range = (y1.min() ,y1.max()),bins = bins)
+        r1 = k1[0];
+        # print(k1)
+        r1 = normalize(r1.reshape(1,-1), norm="l1")
+        r1 = r1[0]
+
+        for j in range(len(r1)):
+            r1[j] = 1 - r1[j]
+        r1 = normalize(r1.reshape(1,-1), norm="l1")
+
+        # print(r1)
+        hist1.append([r1,k1[1]])
+        # k1[0] = r1
+
+
+    # print(hist1)
+
+
+    # for x in 
+
+
+    # n_folds = 5
+    max_depth = 10# previously 100 
+    min_size = 1
+    sample_size = 0.1
+    #n_features = in(sqrt(len(dataset[0]) - 1))
+    # n_features = 3
+    rsmnum = 3;
+    # n_features = int(sqrt(rsmnum))
+    n_features = 2;
+
+    dataset = validationset
+    actuald = [row[-1] for row in dataset]
+
+
+    # for n_trees in [20 , 30 , 40 , 50 , 60 , 70 , 80 , 90 , 100 ,120 ,130 ,140 , 150 ]:
+    #     scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
+    #     print('Trees: %d' % n_trees)
+    #     print('Scores: %s' % scores)
+    #     time.sleep(0.1)
+        # print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
+
+    n_trees = 100
+    # for max_depth in [3 , 6 , 12,20,40,60,80,100,140,200,250 ]:
+    outlierratio = 5
+    # for max_depth in [200]:
+    max_depth = 10
+    # for max_depth in [1,2,3,4,5,6,8,10,15,20,30,40,60,100,150,200,300]:
+    # ave = ave +
     scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
-    print('outlierratio %d' % max_depth)
-    print('Scores: %s' % scores)
+    validave = validave + scores[0][0]
+    # print('outlierratio %d' % max_depth)
+    print('Scores: validationset%s' % scores)
+
+    dataset = test_set
+    actuald = [row[-1] for row in dataset]
+
     # time.sleep(3)
+    scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
+    testave.append(scores[0][0])
+    testmcc.append(scores[0][1][0])
+    
+    # print('outlierratio %d' % max_depth)
+    print('Scores: test_set%s' % scores)
 
 
 
+validave = validave/20
+# testave = testave/20
+
+print("validave")
+print(validave)
+print("testave")
+print(statistics.mean(testave))
+print(statistics.stdev(testave))
+print("testmcc")
+print(statistics.mean(testmcc))
+print(statistics.stdev(testmcc))
+
+# scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
+    # ave = ave + scores
+    # print('outlierratio %d' % max_depth)
+    # print('Scores: %s' % scores)
 
 
 # evaluate_algorithm(dataset, random_forest, n_folds, max_depth, min_size, sample_size, n_trees, n_features);

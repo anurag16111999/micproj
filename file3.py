@@ -5,7 +5,8 @@ from csv import reader
 from math import sqrt
 from sklearn.preprocessing import normalize
 import random as rd
-
+from joblib import Parallel, delayed
+import multiprocessing
 import numpy
 import time
 
@@ -61,7 +62,6 @@ def cross_validation_split(dataset, n_folds):
 # Calculate accuracy percentage
 def accuracy_metric(actual, predicted):
     correct = 0
-
     for i in range(len(actual)):
         if actual[i] == predicted[i][0]:
             correct += 1
@@ -214,7 +214,6 @@ def subsample(dataset, ratio):
 
 # Make a prediction with a list of bagged trees
 def bagging_predict(trees, row):
-    # actualda = 
     predictions = []
     for tree in trees:
         tr = tree[0]
@@ -224,8 +223,7 @@ def bagging_predict(trees, row):
             nRow.append(row[ft])
         nRow.append(row[-1])
         predictions.append(predict(tr, nRow))
-    #predictions = [predict(tree, row) for tree in trees]
-    
+    # predictions = [predict(tree, row) for tree in trees]
     return [max(set(predictions), key=predictions.count)]
 
 
@@ -268,14 +266,101 @@ def giveoutliers(ratio,sample,rsmlist):
     # print(".")
     return val
 
+def gentree(i,train, max_depth, min_size, sample_size, n_features):
+    # trees = list()
+    # rsmnum = 10
+    # print("in rf")
+    # print("len train")
 
+    rsmlist = list()
+    while len(rsmlist) < rsmnum:
+        index = randrange(len(train[0]) - 1)
+        if index not in rsmlist:
+            rsmlist.append(index)
+    sample = subsample(train, sample_size)
+    # outlierset = []
+    # print("sample")
+    # print(len(sample))
+    sample11 = []
+    # print(sample)
+    i1 = 1;
+    for x in sample:
+        # print(x)
+        i1 = i1 + 1;
+        x1 = giveoutliers(outlierratio,x,rsmlist)
+        # print("x1 => " + str(len(sample)))
+        # print(x1)
+        sample11.extend(x1)
+
+    sample.extend(sample11)
+    # print("x1 => " + str(len(sample)))
+    # print("tree " + str(i))
+# n generate the data here
+# THROUGH RSM
+    tempFea = list(rsmlist)
+    newS = []
+    for sm in sample:
+        templ = []
+        for ft in rsmlist:
+            templ.append(sm[ft])
+        templ.append(sm[-1])
+        newS.append(templ)
+
+
+    tree = build_tree(newS, max_depth, min_size, n_features)
+    # tree = build_tree(sample, max_depth, min_size, n_features)
+    # trees.append([tree,tempFea])
+        # trees.append(tree)
+    # print("tree => " + str(i))
+    return [tree,tempFea]
+    # predictions = [bagging_predict(trees, row) for row in test]
+    # return (predictions)
+
+def random_forest_new(n_trees,test,*args):
+    num_cores = multiprocessing.cpu_count()
+    trees = Parallel(n_jobs=num_cores)(delayed(gentree)(i,*args) for i in range(n_trees))
+    predictions = [bagging_predict(trees, row) for row in test]
+    MCC = 0
+    TP = 0
+    FP = 0
+    TN = 0
+    FN = 0
+    print(predictions)
+    # print(actuald)
+    print(len(predictions))
+    # print(len(actuald))
+    
+
+
+    for i in range(len(predictions)):
+        if(predictions[i][0] == 0):
+            if(actuald[i] == 0):
+                TN = TN + 1;
+            else:
+                FP = FP + 1;
+        else:
+            if(actuald[i] == 0):
+                FN = FN + 1;
+            else:
+                TP = TP + 1;
+
+    print(TP)
+    print(FP)
+    print(TN)
+    print(FN)
+
+    MCC = float((TP*TN-FP*FN))/sqrt(float(((TP + FP)*(TP + FN)*(TN + FP)*(TN + FN))))
+
+
+    return ([predictions,MCC,(FN/float(FN + TN))])
+    # return trees
 
 # Random Forest Algorithm
 def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_features):
     trees = list()
     # rsmnum = 10
     # print("in rf")
-    # print(len(train[0]))
+    # print("len train")
 
     for i in range(n_trees):
         rsmlist = list()
@@ -286,7 +371,7 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
         sample = subsample(train, sample_size)
         # outlierset = []
         # print("sample")
-        # print(len(sample))
+        print(len(sample))
         sample11 = []
         # print(sample)
         i1 = 1;
@@ -311,51 +396,20 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
                 templ.append(sm[ft])
             templ.append(sm[-1])
             newS.append(templ)
-            
-        tree = build_tree(newS, max_depth, min_size, n_features)
-        #tree = build_tree(sample, max_depth, min_size, n_features)
-        trees.append([tree,tempFea])
-        #trees.append(tree)
+
+
+        # tree = build_tree(newS, max_depth, min_size, n_features)
+        tree = build_tree(sample, max_depth, min_size, n_features)
+        # trees.append([tree,tempFea])
+        trees.append(tree)
     # print("out rf")
 
     predictions = [bagging_predict(trees, row) for row in test]
-
-    MCC = 0
-    TP = 0
-    FP = 0
-    TN = 0
-    FN = 0
-    # print(predictions)
-    # print(actuald)
-    # print(len(predictions))
-    # print(len(actuald))
-    
-
-    for i in range(len(predictions)):
-        if(predictions[i][0] == 0):
-            if(actuald[i] == 0):
-                TN = TN + 1;
-            else:
-                FP = FP + 1;
-        else:
-            if(actuald[i] == 0):
-                FN = FN + 1;
-            else:
-                TP = TP + 1;
-
-    print(TP)
-    print(FP)
-    print(TN)
-    print(FN)
-
-    MCC = float((TP*TN-FP*FN))/sqrt(float(((TP + FP)*(TP + FN)*(TN + FP)*(TN + FN))))
-
-
-    return ([predictions,MCC,(FN/float(FN + TN))])
+    return (predictions)
 
 
 # Test the random forest algorithm
-# seed(2)
+seed(2)
 
 # load and prepare data
 filename = 'breast-cancer-wisconsin.data'
@@ -375,9 +429,8 @@ str_column_to_cls(dataset, len(dataset[0]) - 1)
 # for x in dataset:
 #     print(x[len(x) -1 ]);
 
-y22=numpy.array([numpy.array(xi) for xi in dataset])
-print(y22)
 
+y22=numpy.array([numpy.array(xi) for xi in dataset])
 yt = []
 yf = []
 
@@ -392,16 +445,16 @@ for z11 in y22:
 time.sleep(1)
 
 
+# time.sleep(0.1)
 rd.shuffle(yt)
-# train_set = yt[0:200]
-# y = numpy.array(train_set)
-# test_set = yt[200:]
-# test_set.extend(yf)
-
 train_set = yt[0:40]
 y = numpy.array(train_set)
 test_set = yt[40:]
 test_set.extend(yf)
+
+
+
+
 print([row[-1] for row in test_set])
 print([row[-1] for row in train_set])
 
@@ -417,7 +470,8 @@ bins = 20;
 column1 = len(dataset[0])
 row1 = len(y)
 hist1 = []
-outlierratio = 10;
+rsmnum = 5;
+outlierratio = 10
 
 # train and testset have to be list of lists
 
@@ -466,47 +520,66 @@ def new_evaluate_algorithm(train_set,test_set, algorithm, *args):
     predicted = algorithm(train_set, test_set, *args)
     # print("predicted: ")
     # print(predicted)
-
+    actuald = [row[-1] for row in test_set]
     # print("actual: ")
-    # print(actuald)
-    # actual = actuald
+    # print(actual)
     accuracy = accuracy_metric(actuald, predicted[0])
     scores.append([accuracy,predicted[1:]])
     return scores
 
 
+def new_evaluate_algorithm2(ntrees,algorithm,testset1, *args):
+    # folds = cross_validation_split(dataset, n_folds)
+    scores = list()
+    # for fold in folds:
+        # train_set = list(folds)
+        # train_set.remove(fold)
+        # train_set = sum(train_set, [])
+        # test_set = list()
+        # for row in fold:
+            # row_copy = list(row)
+            # test_set.append(row_copy)
+            # row_copy[-1] = None
+    predicted = algorithm(ntrees,testset1,*args)
+    # print("predicted: ")
+    # print(predicted)
+    actuald = [row[-1] for row in testset1]
+    # print("actual: ")
+    # print(actual)
+    accuracy = accuracy_metric(actuald, predicted[0])
+    scores.append([accuracy,predicted[1:]])
+    return scores
+
+
+
 # n_folds = 5
-max_depth = 10# previously 100 
+# max_depth = input("depth") # previously 100 
 min_size = 1
-sample_size = 0.1
-#n_features = in(sqrt(len(dataset[0]) - 1))
-# n_features = 3
-rsmnum = 5;
+# sample_size = input("ratio")
+#n_features = int(sqrt(len(dataset[0]) - 1))
+n_features = int(sqrt(rsmnum))
+
+# nte = input("trees")
+rsmnum = 3;
 # n_features = int(sqrt(rsmnum))
-n_features = 3;
+n_features = 2;
+
+max_depth = 3
+sample_size = 0.1
+# nte =
 
 dataset = test_set
 actuald = [row[-1] for row in dataset]
-
-
-# for n_trees in [20 , 30 , 40 , 50 , 60 , 70 , 80 , 90 , 100 ,120 ,130 ,140 , 150 ]:
+# for n_trees in [nte]:
 #     scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
 #     print('Trees: %d' % n_trees)
 #     print('Scores: %s' % scores)
-#     time.sleep(0.1)
-    # print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
-
-n_trees = 100
-# for max_depth in [3 , 6 , 12,20,40,60,80,100,140,200,250 ]:
-outlierratio = 5
-# for max_depth in [200]:
-max_depth = 12
-for k2234 in range(20):
-    scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
-    print('outlierratio %d' % max_depth)
+#     print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
+for n_trees in [100,200,300,400,500,600,700,800,900]:
+    scores = new_evaluate_algorithm2(n_trees,random_forest_new,dataset,train_set, max_depth, min_size, sample_size, n_features)
+    print('Trees: %d' % n_trees)
     print('Scores: %s' % scores)
-    # time.sleep(3)
-
+    # print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
 
 
 

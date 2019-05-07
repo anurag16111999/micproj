@@ -334,14 +334,14 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
     for i in range(len(predictions)):
         if(predictions[i][0] == 0):
             if(actuald[i] == 0):
-                TN = TN + 1;
+                TP = TP + 1;
             else:
-                FP = FP + 1;
+                FN = FN + 1;
         else:
             if(actuald[i] == 0):
-                FN = FN + 1;
+                FP = FP + 1;
             else:
-                TP = TP + 1;
+                TN = TN + 1;
 
     print(TP)
     print(FP)

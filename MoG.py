@@ -204,11 +204,27 @@ for dat in dataset:
         else:
             predict.append(1)
 accuracy = accuracy_metric(actual, predict)
-print(ws[0])
-print(means[0])
-print(covar[0])
-print(predict)
-print(actual)
+MCC = 0
+TP = 0
+FP = 0
+TN = 0
+FN = 0
+    
+
+for i in range(len(predict)):
+    if(predict[i] == 0):
+        if(actual[i] == 0):
+            TP = TP + 1;
+        else:
+            FN = FN + 1;
+    else:
+        if(actual[i] == 0):
+            FP = FP + 1;
+        else:
+            TN = TN + 1;
+MCC = float((TP*TN-FP*FN))/sqrt(float(((TP + FP)*(TP + FN)*(TN + FP)*(TN + FN))))
+
 scores = []
 scores.append(accuracy)
 print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
+print('MCC:- '+str(MCC))

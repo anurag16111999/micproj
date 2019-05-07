@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 
 folder = "NORMAL"
-mypath = "/home/mohan_abhyas/Documents/acads/cs736/micproj/imclass/chest_xray/train/" + folder
+mypath = "/home/anurag/Documents/cs 736/chest-xray-pneumonia/chest_xray/chest_xray/train/" + folder
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
 # print(onlyfiles)
@@ -42,7 +42,7 @@ for image in onlyfiles:
 print("setp1")
 
 folder = "PNEUMONIA"
-mypath = "/home/mohan_abhyas/Documents/acads/cs736/micproj/imclass/chest_xray/train/" + folder
+mypath = "/home/anurag/Documents/cs 736/chest-xray-pneumonia/chest_xray/chest_xray/train/" + folder
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
 # featurestotal = []
@@ -77,7 +77,7 @@ for selected1 in [400]:
 	features111 = sc.fit_transform(featurestotal[:selected1])
         features211 = sc.transform(featurestotal[selected1:])
         featurestotal = []
-	pca = PCA(n_components = 100)
+	pca = PCA(n_components = 350)
         xtr = pca.fit_transform(features111)
         xte = pca.transform(features211)
 

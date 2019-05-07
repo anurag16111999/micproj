@@ -400,14 +400,14 @@ validave = 0
 testave = []
 testmcc = []
 for x2234 in range(1):
-    datapoints = 600
-    rsmnum = 20;
-    n_features = 9;
-    n_trees = 10
-    outlierratio = 20
-    max_depth = 8
+    datapoints = 200
+    rsmnum = 10
+    n_features = 5
+    n_trees = 200
+    outlierratio = 5
+    max_depth = 3
 
-    filename = "outputfull" + str(datapoints) + ".csv"
+    filename = "outputautoencoder.csv"
     dataset = load_csv(filename)
     for i,rw in enumerate(dataset):
         rw = rw[1:]
@@ -468,8 +468,8 @@ for x2234 in range(1):
     dataset = validationset
     actuald = [row[-1] for row in dataset]
 
-    #scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
-    #validave = validave + scores[0][0]
+    scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
+    validave = validave + scores[0][0]
     # print('outlierratio %d' % max_depth)
     #print('Scores: validationset%s' % scores)
 
@@ -478,6 +478,7 @@ for x2234 in range(1):
 
     # time.sleep(3)
     scores = new_evaluate_algorithm(train_set,test_set, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
+    
     testave.append(scores[0][0])
     testmcc.append(scores[0][1][0])
 
@@ -486,7 +487,7 @@ for x2234 in range(1):
 
 
 
-validave = validave/20
+# validave = validave/20
 # testave = testave/20
 
 print("validave")

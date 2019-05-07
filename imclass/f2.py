@@ -287,11 +287,15 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
 
     for i in range(n_trees):
         rsmlist = list()
-        while len(rsmlist) < rsmnum:
-            index = randrange(len(train[0]) - 1)
-            if index not in rsmlist:
-                rsmlist.append(index)
+        templ = list(range(0, len(train[0])-1))
+        rd.shuffle(templ)
+        rsmlist = templ[0:rsmnum]
+        #while len(rsmlist) < rsmnum:
+         #   index = randrange(len(train[0]) - 1)
+          #  if index not in rsmlist:
+           #     rsmlist.append(index)
         sample = subsample(train, sample_size)
+        print("here")
         # outlierset = []
         # print("sample")
         # print(len(sample))
@@ -319,7 +323,7 @@ def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_feat
                 templ.append(sm[ft])
             templ.append(sm[-1])
             newS.append(templ)
-        # print("tree => " +str(i))
+        print("tree => " +str(i))
         # print(newS)
         tree = build_tree(newS, max_depth, min_size, n_features)
         #tree = build_tree(sample, max_depth, min_size, n_features)
@@ -396,13 +400,13 @@ validave = 0
 testave = []
 testmcc = []
 for x2234 in range(1):
-    datapoints = input()
-    rsmnum = 10;
-    n_features = 4;
-    n_trees = 800
-    outlierratio = 5
-    max_depth = 6
-    
+    datapoints = 600
+    rsmnum = 20;
+    n_features = 9;
+    n_trees = 10
+    outlierratio = 20
+    max_depth = 8
+
     filename = "outputfull" + str(datapoints) + ".csv"
     dataset = load_csv(filename)
     for i,rw in enumerate(dataset):
@@ -413,13 +417,7 @@ for x2234 in range(1):
         str_column_to_int(dataset, i)
 
     # convert class column to integers
-    str_column_to_cls(dataset, len(dataset[0]) - 1)
-
-    # evaluate algorithm
-    print(dataset)
-    # for x in dataset:
-    #     print(x[len(x) -1 ]);
-
+    str_column_to_int(dataset, len(dataset[0]) - 1)
     y22=numpy.array([numpy.array(xi) for xi in dataset])
     # print(y22)
 
@@ -437,57 +435,22 @@ for x2234 in range(1):
     time.sleep(1)
 
 
-    # rd.shuffle(yt)
-    # train_set = yt[0:200]
-    # y = numpy.array(train_set)
-    # test_set = yt[200:]
-    # test_set.extend(yf)
-    # validationset
-    
-    print(len(yt))
-    print(len(yf))
-    
-
-
-
     train_set = yt[0:datapoints]
     test_set = yt[datapoints:]
     y = numpy.array(train_set)
     validationset = yt[0:datapoints]
     test_set.extend(yf)
 
-    # test_set = train_set
-# 
-
-    print([row[-1] for row in test_set])
-    print([row[-1] for row in train_set])
-
-
-    print("train_set")
-    # print(train_set)
-
-    print("test_set")
-    # print(test_set)
-
+    print(len(test_set))
+    time.sleep(1)
     bins = 30;
 
     column1 = len(dataset[0])
     row1 = len(y)
     hist1 = []
-    # outlierratio = 2;
-
-    # train and testset have to be list of lists
-
-    # train_set = y
-
-
 
     for i in range(column1-1):
         y1 = y[:,[i]]
-        # print(y1)
-        # print( str(i) + " => " + str(max(y1)))
-        # print(min(y1))
-        #k1 = numpy.histogram(y1,range = (y1.min() - ((y1.max()-y1.min())/10),y1.max() + ((y1.max()-y1.min())/10)),bins = bins)
         k1 = numpy.histogram(y1,range = (y1.min() ,y1.max()),bins = bins)
         r1 = k1[0];
         # print(k1)
@@ -500,51 +463,24 @@ for x2234 in range(1):
 
         # print(r1)
         hist1.append([r1,k1[1]])
-        # k1[0] = r1
-
-
-    # print(hist1)
-
-
-    # for x in 
-
-
-    # n_folds = 5
-    # max_depth = 1# previously 100 
     min_size = 1
     sample_size = 0.1
-    #n_features = in(sqrt(len(dataset[0]) - 1))
-    # n_features = 3
-    # rsmnum = 6;
-    # n_features = int(sqrt(rsmnum))
-    # n_features = 3;
-
     dataset = validationset
     actuald = [row[-1] for row in dataset]
 
-
-    # for n_trees in [20 , 30 , 40 , 50 , 60 , 70 , 80 , 90 , 100 ,120 ,130 ,140 , 150 ]:
-    #     scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
-    #     print('Trees: %d' % n_trees)
-    #     print('Scores: %s' % scores)
-    #     time.sleep(0.1)
-        # print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
-
-    # for max_depth in [1,2,3,4,5,6,8,10,15,20,30,40,60,100,150,200,300]:
-    # ave = ave +
-    scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
-    validave = validave + scores[0][0]
+    #scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
+    #validave = validave + scores[0][0]
     # print('outlierratio %d' % max_depth)
-    print('Scores: validationset%s' % scores)
+    #print('Scores: validationset%s' % scores)
 
     dataset = test_set
     actuald = [row[-1] for row in dataset]
 
     # time.sleep(3)
-    scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
+    scores = new_evaluate_algorithm(train_set,test_set, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
     testave.append(scores[0][0])
     testmcc.append(scores[0][1][0])
-    
+
     # print('outlierratio %d' % max_depth)
     print('Scores: test_set%s' % scores)
 
@@ -561,15 +497,3 @@ print(statistics.stdev(testave))
 print("testmcc")
 print(statistics.mean(testmcc))
 print(statistics.stdev(testmcc))
-
-# scores = new_evaluate_algorithm(train_set,dataset, random_forest, max_depth, min_size, sample_size, n_trees, n_features)
-    # ave = ave + scores
-    # print('outlierratio %d' % max_depth)
-    # print('Scores: %s' % scores)
-
-
-# evaluate_algorithm(dataset, random_forest, n_folds, max_depth, min_size, sample_size, n_trees, n_features);
-#predicted = algorithm(train_set, test_set, *args);
-
-
-# def bagging_predict(trees, row);

@@ -77,7 +77,7 @@ for selected1 in [100,200,400,800,1200]:
 
 	feamean = np.mean(featurestotal,axis = 0)
 
-	feastd = np.mean(featurestotal,axis = 0)
+	feastd = np.std(featurestotal,axis = 0)
 
 	# print(k1)
 	# for image in onlyfiles:
@@ -95,6 +95,7 @@ for selected1 in [100,200,400,800,1200]:
 	idx = eigenValues.argsort()[::-1]   
 	eigenValues = eigenValues[idx]
 	eigenVectors = eigenVectors[:,idx]
+	print(np.dot(np.transpose(eigenVectors),eigenVectors))
 	# print(eigenValues)
 	# print(eigenVectors)
 	# plt.plot(eigenValues[:50])
@@ -140,6 +141,7 @@ for selected1 in [100,200,400,800,1200]:
 	# csvdata = eigenVectors[:20]
 	# print(len(ccs))
 
+	exit()
 	with open("outputfull" + str(selected1) + ".csv", "wb") as f:
 	    writer = csv.writer(f)
 	    writer.writerows(csvdata)

@@ -401,7 +401,7 @@ for x2234 in range(1):
     n_features = 4;
     n_trees = 800
     outlierratio = 5
-    max_depth = 4
+    max_depth = 6
     
     filename = "outputfull" + str(datapoints) + ".csv"
     dataset = load_csv(filename)
@@ -437,7 +437,7 @@ for x2234 in range(1):
     time.sleep(1)
 
 
-    rd.shuffle(yt)
+    # rd.shuffle(yt)
     # train_set = yt[0:200]
     # y = numpy.array(train_set)
     # test_set = yt[200:]

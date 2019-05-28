@@ -405,7 +405,7 @@ for x2234 in range(1):
     n_features = 5
     n_trees = 200
     outlierratio = 5
-    max_depth = 3
+    max_depth = 4
 
     filename = "outputautoencoder.csv"
     dataset = load_csv(filename)

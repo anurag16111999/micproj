@@ -18,11 +18,11 @@ onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
 # print(onlyfiles)
 i1 = 1
-seltol = 400
+seltol = 1300
 #seltol = 10
 # selected1 = 800
 # for selected1 in [200]:
-samplpositive = 250
+samplpositive = 600
 #samplpositive = 10
 featurestotal = []
 for image in onlyfiles:
@@ -65,8 +65,8 @@ for image in onlyfiles:
 		break
 
 
-x_train = featurestotal[:200]
-x_test = featurestotal[200:]
+x_train = featurestotal[:600]
+x_test = featurestotal[600:]
 
 # this is the size of our encoded representations
 encoding_dim = 100  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
@@ -130,10 +130,10 @@ csvdata = []
 encoded_imgs = encoder.predict(x_train)
 csvdata = [(xi.tolist() + [0]) for xi in encoded_imgs]
 
-encoded_imgs = encoder.predict(x_test[:200])
+encoded_imgs = encoder.predict(x_test[:700])
 csvdata.extend([(xi.tolist() + [0]) for xi in encoded_imgs])
 
-encoded_imgs = encoder.predict(x_test[200:])
+encoded_imgs = encoder.predict(x_test[700:])
 csvdata.extend([(xi.tolist() + [1]) for xi in encoded_imgs])
 
 with open("outputautoencoder.csv", "wb") as f:
@@ -163,4 +163,4 @@ with open("outputautoencoder.csv", "wb") as f:
 #     plt.gray()
 #     ax.get_xaxis().set_visible(False)
 #     ax.get_yaxis().set_visible(False)
-# plt.show()
+# plt.show()		
